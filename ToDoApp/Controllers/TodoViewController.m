@@ -8,15 +8,17 @@
 
 #import "TodoViewController.h"
 @import Firebase;
+#import "SwipeableCell.h"
 #import "EditTodoViewController.h"
 
 #define kCellIdentifier @"todoCell"
 
 
-@interface TodoViewController () {
+@interface TodoViewController () <SwipeableCellDelegate> {
     NSMutableArray *todoList;
     FIRDatabaseReference *todosRef;
 }
+@property (nonatomic, strong) NSMutableArray *cellsCurrentlyEditing;
 @end
 
 @implementation TodoViewController
@@ -27,9 +29,11 @@
     NSLog(@"Init Firebase");
     // Create a reference to a Firebase location
     
+    self.cellsCurrentlyEditing = [NSMutableArray array];
+    
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     todoList = [[NSMutableArray alloc] init];
-    NSMutableArray *saveAry = [[NSMutableArray alloc] init];
+    //NSMutableArray *saveAry = [[NSMutableArray alloc] init];
     
     // since I can connect from multiple devices, we store each connection instance separately
     // any time that connectionsRef's value is null (i.e. has no children) I am offline
@@ -79,7 +83,7 @@
              
              NSDate *createdAt = [NSDate dateWithTimeIntervalSince1970:[todo[@"created_at"] doubleValue]];
              
-             TodoItem *item = [[TodoItem alloc]initWithText:todo[@"text"] createdAt:createdAt isComplete:[todo[@"complete"] boolValue]];
+             TodoItem *item = [[TodoItem alloc]initWithText:todo[@"text"] createdAt:createdAt];
              item.key = child.key;
              [self->todoList addObject:item];
          }
@@ -89,7 +93,7 @@
              return [second compare:first];
          }]];
 
-         [prefs setObject:self->todoList  forKey:@"todoList"];
+//         [prefs setObject:self->todoList  forKey:@"todoList"];
          [self.tableView reloadData];
      }];
 
@@ -118,27 +122,26 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
+    SwipeableCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
+//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellIdentifier forIndexPath:indexPath];
     
     TodoItem *todo = [todoList objectAtIndex: [indexPath row]];
     // Configure the cell...
-    cell.textLabel.text = todo.text;
+    cell.itemText = todo.text;
+    cell.delegate = self;
     
-    if (todo.isComplete)
-    {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    }else{
-        cell.accessoryType = UITableViewCellAccessoryNone;
+    if ([self.cellsCurrentlyEditing containsObject:indexPath]) {
+        [cell openCell];
     }
     
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    TodoItem *todo = [todoList objectAtIndex: [indexPath row]];
-    todo.isComplete = !todo.isComplete;
-    //update it on firebase
-    [self saveUpdatedTodoItem:todo];
+//    TodoItem *todo = [todoList objectAtIndex: [indexPath row]];
+//    todo.isComplete = !todo.isComplete;
+//    //update it on firebase
+//    [self saveUpdatedTodoItem:todo];
 }
 
 #pragma mark - Navigation
@@ -147,12 +150,52 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
+    
     if ([segue.identifier isEqualToString:@"EditTodoSegue"]) {
         EditTodoViewController *vc = (EditTodoViewController *)[segue.destinationViewController topViewController];
+//        TodoItem *todo = [todoList objectAtIndex: [indexPath row]];
         vc.delegate = self;
     }
     
     
+}
+
+#pragma mark - SwipeableCellDelegate
+- (void)delBtnClicked:(UITableViewCell *)mycell
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Confirmation" message:@"Do you really want to delete this todo?" preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action)
+     {
+         NSIndexPath *currentEditingIndexPath = [self.tableView indexPathForCell:mycell];
+         TodoItem *todo = [self->todoList objectAtIndex: [currentEditingIndexPath row]];
+         FIRDatabaseReference *reference;
+         reference = [self->todosRef child:todo.key];
+         
+         [reference removeValue];
+     }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:cancel];
+    [alert addAction:ok];
+    [self presentViewController:alert animated:YES completion:nil];
+
+}
+
+- (void)editBtnClicked:(UITableViewCell *)mycell
+{
+    NSIndexPath *currentEditingIndexPath = [self.tableView indexPathForCell:mycell];
+    TodoItem *todo = [todoList objectAtIndex: [currentEditingIndexPath row]];
+    
+    
+    
+    UIStoryboard* sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    EditTodoViewController* myVC = [sb instantiateViewControllerWithIdentifier:@"EditTodoViewController"];
+    myVC.todo = todo;
+    myVC.delegate = self;
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:myVC];
+    navController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    [self presentViewController:navController animated:YES completion:nil];
+
 }
 
 - (void)saveUpdatedTodoItem:(TodoItem *)todo {
@@ -166,4 +209,17 @@
     [reference setValue: [todo asDict]];
 }
 
+- (void)cellDidOpen:(UITableViewCell *)cell
+{
+    NSIndexPath *currentEditingIndexPath = [self.tableView indexPathForCell:cell];
+    [self.cellsCurrentlyEditing addObject:currentEditingIndexPath];
+}
+
+- (void)cellDidClose:(UITableViewCell *)cell
+{
+    [self.cellsCurrentlyEditing removeObject:[self.tableView indexPathForCell:cell]];
+}
+
+
 @end
+

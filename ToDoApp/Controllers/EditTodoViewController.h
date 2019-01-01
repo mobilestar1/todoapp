@@ -15,11 +15,14 @@
 
 @end
 
-@interface EditTodoViewController : UIViewController
+@interface EditTodoViewController : UIViewController {
+}
 - (IBAction)cancelBtnPressed:(id)sender;
 - (IBAction)doneBtnPressed:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UITextField *todoTextField;
 @property (weak, nonatomic) id <EditTodoViewControllerDelegate> delegate;
+
+@property TodoItem *todo;
 
 @end

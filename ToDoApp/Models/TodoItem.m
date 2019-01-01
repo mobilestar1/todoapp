@@ -14,17 +14,15 @@
     {
         self.text = text;
         self.createdAt = [[NSDate alloc]init];
-        self.isComplete = NO;
     }
     return self;
 }
 
-- (instancetype) initWithText: (NSString *)text createdAt: (NSDate *) date isComplete: (BOOL) isComplete {
+- (instancetype) initWithText: (NSString *)text createdAt: (NSDate *) date{
     if (self = [super init])
     {
         self.text = text;
         self.createdAt = date;
-        self.isComplete = isComplete;
     }
     return self;
 }
@@ -38,11 +36,11 @@
 
 - (NSDictionary *) asDict {
     //this should be done using a lib for JSON serialization
-    return @{@"text": self.text, @"complete": [NSNumber numberWithBool: self.isComplete], @"created_at": [NSNumber numberWithDouble:[self.createdAt timeIntervalSince1970]]};
+    return @{@"text": self.text, @"created_at": [NSNumber numberWithDouble:[self.createdAt timeIntervalSince1970]]};
 //    return [NSString stringWithFormat:@"{\"text\":\"%@\", \"complete\":\"%d\"}", self.text, self.isComplete];
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat: @"TODO: Text=%@ Complete=%d", self.text, self.isComplete];
+    return [NSString stringWithFormat: @"TODO: Text=%@", self.text];
 }
 @end

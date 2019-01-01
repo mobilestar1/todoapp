@@ -9,7 +9,9 @@
 #import "EditTodoViewController.h"
 #import "TodoItem.h"
 
-@interface EditTodoViewController ()
+@interface EditTodoViewController (){
+    TodoItem *todo;
+}
 
 @end
 
@@ -17,13 +19,15 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self.todoTextField setText:todo.text];
     // Do any additional setup after loading the view.
     
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    // Dispose of any resources that can be rec(nonatomic) reated.
 }
 
 /*
@@ -43,10 +47,17 @@
 - (IBAction)doneBtnPressed:(id)sender {
     if (self.todoTextField.text.length > 0)
     {
-        TodoItem *todo = [[TodoItem alloc] initWithText:self.todoTextField.text];
+        todo.text = self.todoTextField.text;
+//        TodoItem *savetodo = [[TodoItem alloc] initWithText:self.todoTextField.text];
         [self.delegate saveUpdatedTodoItem:todo];
         [self dismissViewControllerAnimated:YES completion:nil];
 
     }
 }
+
+
+- (void) setTodo: (TodoItem*) prevTodo {
+    todo = prevTodo;
+}
+
 @end

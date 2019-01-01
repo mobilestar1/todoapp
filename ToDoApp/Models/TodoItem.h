@@ -12,9 +12,8 @@
 @property NSString *key;
 @property NSString *text;
 @property NSDate *createdAt;
-@property BOOL isComplete;
 
-- (instancetype) initWithText: (NSString *)text createdAt: (NSDate *) date isComplete: (BOOL) isComplete;
+- (instancetype) initWithText: (NSString *)text createdAt: (NSDate *) date;
 - (instancetype) initWithText: (NSString *)text;
 - (NSString *) asDict;
 

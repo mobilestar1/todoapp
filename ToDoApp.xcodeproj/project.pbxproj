@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8EBC4E65F388FF65DF52E474 /* libPods-ToDoApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F06B6891637BAF1D58DA925 /* libPods-ToDoApp.a */; };
+		BF4D4FC121DB984E00BB3641 /* SwipeableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = BF4D4FBF21DB984E00BB3641 /* SwipeableCell.m */; };
 		BFAD431521DAD47B00A3C930 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BFAD431421DAD47B00A3C930 /* GoogleService-Info.plist */; };
 		BFC1A77821DACEF8009192BE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BFC1A77721DACEF8009192BE /* AppDelegate.m */; };
 		BFC1A77E21DACEF8009192BE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFC1A77C21DACEF8009192BE /* Main.storyboard */; };
@@ -42,6 +43,8 @@
 /* Begin PBXFileReference section */
 		00F48AB5DA763499DE58468D /* Pods-ToDoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDoApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ToDoApp/Pods-ToDoApp.debug.xcconfig"; sourceTree = "<group>"; };
 		7F06B6891637BAF1D58DA925 /* libPods-ToDoApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ToDoApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF4D4FBF21DB984E00BB3641 /* SwipeableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwipeableCell.m; sourceTree = "<group>"; };
+		BF4D4FC021DB984E00BB3641 /* SwipeableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwipeableCell.h; sourceTree = "<group>"; };
 		BFAD431421DAD47B00A3C930 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BFC1A77321DACEF8009192BE /* ToDoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFC1A77621DACEF8009192BE /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -180,6 +183,8 @@
 		BFC1A7AD21DACF9D009192BE /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				BF4D4FC021DB984E00BB3641 /* SwipeableCell.h */,
+				BF4D4FBF21DB984E00BB3641 /* SwipeableCell.m */,
 				BFC1A7B221DAD038009192BE /* EditTodoViewController.h */,
 				BFC1A7B321DAD038009192BE /* EditTodoViewController.m */,
 				BFC1A7B121DAD038009192BE /* TodoViewController.h */,
@@ -351,6 +356,7 @@
 				BFC1A78921DACEFA009192BE /* main.m in Sources */,
 				BFC1A7B021DAD02D009192BE /* TodoItem.m in Sources */,
 				BFC1A77821DACEF8009192BE /* AppDelegate.m in Sources */,
+				BF4D4FC121DB984E00BB3641 /* SwipeableCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
