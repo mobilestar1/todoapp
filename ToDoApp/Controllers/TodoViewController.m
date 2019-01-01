@@ -8,6 +8,7 @@
 
 #import "TodoViewController.h"
 @import Firebase;
+#import "AppDelegate.h"
 #import "SwipeableCell.h"
 #import "EditTodoViewController.h"
 
@@ -17,6 +18,8 @@
 @interface TodoViewController () <SwipeableCellDelegate> {
     NSMutableArray *todoList;
     FIRDatabaseReference *todosRef;
+    AppDelegate *appDelegate;
+    NSManagedObjectContext *context;
 }
 @property (nonatomic, strong) NSMutableArray *cellsCurrentlyEditing;
 @end
@@ -26,15 +29,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(performTask) name:@"appTerminated" object:nil];
+
     NSLog(@"Init Firebase");
-    // Create a reference to a Firebase location
+    
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     
     self.cellsCurrentlyEditing = [NSMutableArray array];
     
-    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     todoList = [[NSMutableArray alloc] init];
     //NSMutableArray *saveAry = [[NSMutableArray alloc] init];
     
+    // Create a reference to a Firebase location
     // since I can connect from multiple devices, we store each connection instance separately
     // any time that connectionsRef's value is null (i.e. has no children) I am offline
     FIRDatabaseReference *myConnectionsRef = [[FIRDatabase database] referenceWithPath:@"users/morgan/connections"];
@@ -64,7 +70,13 @@
             // when I disconnect, update the last time I was seen online
             [lastOnlineRef onDisconnectSetValue:[FIRServerValue timestamp]];
         } else {
-            self->todoList = [[prefs objectForKey:@"todoList"] mutableCopy];
+            NSArray *savedTodoList = [userDefaults objectForKey:@"todoList"];
+            [self->todoList removeAllObjects];
+            for (NSDictionary *dic in savedTodoList) {
+                TodoItem *saveTodo = [[TodoItem alloc] initWithKey:[dic valueForKey:@"text"] key:[dic valueForKey:@"key"]];
+                [self->todoList addObject:saveTodo];
+            }
+            [self.tableView reloadData];
         }
     }];
 
@@ -93,7 +105,6 @@
              return [second compare:first];
          }]];
 
-//         [prefs setObject:self->todoList  forKey:@"todoList"];
          [self.tableView reloadData];
      }];
 
@@ -108,6 +119,17 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void) performTask {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSMutableArray *saveAry = [NSMutableArray array];
+    for (NSDictionary *dic in self->todoList) {
+        NSDictionary *saveTodo = @{@"text": [dic valueForKey:@"text"], @"key" : [dic valueForKey:@"key"]};
+        [saveAry addObject:saveTodo];
+    }
+    
+    [userDefaults setObject:saveAry forKey:@"todoList"];
+    [userDefaults synchronize];
+}
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -137,13 +159,6 @@
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-//    TodoItem *todo = [todoList objectAtIndex: [indexPath row]];
-//    todo.isComplete = !todo.isComplete;
-//    //update it on firebase
-//    [self saveUpdatedTodoItem:todo];
-}
-
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -153,7 +168,6 @@
     
     if ([segue.identifier isEqualToString:@"EditTodoSegue"]) {
         EditTodoViewController *vc = (EditTodoViewController *)[segue.destinationViewController topViewController];
-//        TodoItem *todo = [todoList objectAtIndex: [indexPath row]];
         vc.delegate = self;
     }
     
@@ -199,14 +213,37 @@
 }
 
 - (void)saveUpdatedTodoItem:(TodoItem *)todo {
-    FIRDatabaseReference *reference;
-    if (todo.key == nil)
-    {
-        reference = [todosRef childByAutoId];
-    } else {
-        reference = [todosRef child:todo.key];
-    }
-    [reference setValue: [todo asDict]];
+    FIRDatabaseReference *connectedRef = [[FIRDatabase database] referenceWithPath:@".info/connected"];
+    [connectedRef observeEventType:FIRDataEventTypeValue withBlock:^(FIRDataSnapshot *snapshot) {
+        if([snapshot.value boolValue]) {
+            FIRDatabaseReference *reference;
+            if (todo.key == nil)
+            {
+                reference = [self->todosRef childByAutoId];
+            } else {
+                reference = [self->todosRef child:todo.key];
+            }
+            [reference setValue: [todo asDict]];
+        } else {
+            if (todo.key == nil)
+            {
+                [self->todoList insertObject:todo atIndex:[self->todoList count]];
+                [self.tableView reloadData];
+            } else {
+                NSUInteger i = 0;
+                for (NSDictionary *dic in self->todoList) {
+                    if ([dic valueForKey:@"key"] == todo.key) {
+                        break;
+                    }
+                    i++;
+                }
+                [self->todoList removeObjectAtIndex:i];
+                [self->todoList addObject:todo];
+                [self.tableView reloadData];
+            }
+        }
+    }];
+    
 }
 
 - (void)cellDidOpen:(UITableViewCell *)cell

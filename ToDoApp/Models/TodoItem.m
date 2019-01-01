@@ -17,7 +17,14 @@
     }
     return self;
 }
-
+- (instancetype) initWithKey: (NSString *)text key: (NSString*) key{
+    if (self = [super init])
+    {
+        self.text = text;
+        self.key = key;
+    }
+    return self;
+}
 - (instancetype) initWithText: (NSString *)text createdAt: (NSDate *) date{
     if (self = [super init])
     {

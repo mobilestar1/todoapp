@@ -10,7 +10,7 @@
 #import "TodoItem.h"
 
 @interface EditTodoViewController (){
-    TodoItem *todo;
+//    TodoItem *todo;
 }
 
 @end
@@ -20,7 +20,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.todoTextField setText:todo.text];
+    [self.todoTextField setText:_todo.text];
     // Do any additional setup after loading the view.
     
 }
@@ -47,17 +47,15 @@
 - (IBAction)doneBtnPressed:(id)sender {
     if (self.todoTextField.text.length > 0)
     {
-        todo.text = self.todoTextField.text;
-//        TodoItem *savetodo = [[TodoItem alloc] initWithText:self.todoTextField.text];
-        [self.delegate saveUpdatedTodoItem:todo];
+        if (_todo == nil) {
+            _todo = [[TodoItem alloc] initWithText: self.todoTextField.text];
+        } else {
+            _todo.text = self.todoTextField.text;
+        }
+        [self.delegate saveUpdatedTodoItem:_todo];
         [self dismissViewControllerAnimated:YES completion:nil];
 
     }
-}
-
-
-- (void) setTodo: (TodoItem*) prevTodo {
-    todo = prevTodo;
 }
 
 @end

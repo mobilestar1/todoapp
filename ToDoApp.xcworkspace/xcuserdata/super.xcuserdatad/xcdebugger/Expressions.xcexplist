@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "-[EditTodoViewController viewDidLoad]:EditTodoViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[TodoViewController viewDidLoad]:TodoViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[TodoViewController editBtnClicked:]:TodoViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[EditTodoViewController doneBtnPressed:]:EditTodoViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "-[TodoViewController delBtnClicked:]:TodoViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "__33-[TodoViewController viewDidLoad]_block_invoke.232:TodoViewController.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "[dic valueForKey:@&quot;text&quot;]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "-[TodoViewController saveUpdatedTodoItem:]:TodoViewController.m">
+      </ContextState>
+      <ContextState
+         contextName = "__36-[TodoViewController delBtnClicked:]_block_invoke:TodoViewController.m">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

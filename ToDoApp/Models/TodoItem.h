@@ -14,6 +14,7 @@
 @property NSDate *createdAt;
 
 - (instancetype) initWithText: (NSString *)text createdAt: (NSDate *) date;
+- (instancetype) initWithKey: (NSString *)text key: (NSString *) key;
 - (instancetype) initWithText: (NSString *)text;
 - (NSString *) asDict;
 
